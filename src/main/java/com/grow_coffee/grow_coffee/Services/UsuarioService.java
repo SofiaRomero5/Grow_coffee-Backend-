@@ -15,39 +15,33 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    private final BCryptPasswordEncoder claveEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    private BCryptPasswordEncoder claveEncoder; 
 
-    // 🔹 Registrar usuario (guarda la clave encriptada)
+    // Registrar usuario
     public Usuario registrarUsuario(Usuario usuario) {
-        usuario.setClave(claveEncoder.encode(usuario.getClave()));
+        usuario.setClave(claveEncoder.encode(usuario.getClave())); // Encriptar contraseña
         return usuarioRepository.save(usuario);
     }
 
-    // 🔹 Obtener usuario por correo (ajustado a tu modelo)
+    // Buscar usuario por correo
     public Optional<Usuario> obtenerPorCorreo(String correo) {
         return usuarioRepository.findByCorreo(correo);
     }
 
-    // 🔹 Validar login manual
+    // Verificar contraseña
+    public boolean verificarClave(String rawPassword, String encodedPassword) {
+        return claveEncoder.matches(rawPassword, encodedPassword);
+    }
+
+    // Login
     public Usuario login(String correo, String clave) {
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByCorreo(correo);
+        Optional<Usuario> userOpt = obtenerPorCorreo(correo);
 
-        if (usuarioOpt.isPresent()) {
-            Usuario user = usuarioOpt.get();
-
-            // Compara la clave ingresada con la clave encriptada
-            if (claveEncoder.matches(clave, user.getClave())) {
-                return user; // ✅ Autenticación exitosa
-            }
+        if (userOpt.isPresent() && verificarClave(clave, userOpt.get().getClave())) {
+            return userOpt.get();
         }
 
-        //  Si no coincide o no existe
-        return null;
-    }
-
-    //  Verificar clave (usado en el controlador)
-    public boolean verificarClave(String claveIngresada, String claveEncriptada) {
-        return claveEncoder.matches(claveIngresada, claveEncriptada);
+        return null; // login fallido
     }
 }
-
