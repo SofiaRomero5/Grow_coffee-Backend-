@@ -16,7 +16,12 @@ public class UsuarioService {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-    private BCryptPasswordEncoder claveEncoder; 
+    private BCryptPasswordEncoder claveEncoder;
+
+    //  Agregamos este setter para usarlo en las pruebas
+    public void setClaveEncoder(BCryptPasswordEncoder claveEncoder) {
+        this.claveEncoder = claveEncoder;
+    }
 
     // Registrar usuario
     public Usuario registrarUsuario(Usuario usuario) {
@@ -42,6 +47,6 @@ public class UsuarioService {
             return userOpt.get();
         }
 
-        return null; // login fallido
+        return null;
     }
 }

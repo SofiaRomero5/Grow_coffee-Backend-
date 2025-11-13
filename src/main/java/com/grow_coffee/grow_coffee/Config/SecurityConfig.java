@@ -12,9 +12,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) 
+            .csrf(csrf -> csrf.disable()) // Desactiva CSRF (necesario para PUT/POST en Postman)
+            .cors(cors -> cors.disable()) // 🔓 Desactiva CORS temporalmente para Postman
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/**").permitAll() 
+                .requestMatchers("/**").permitAll() // Permite todas las rutas y métodos
                 .anyRequest().authenticated()
             );
 
